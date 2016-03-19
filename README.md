@@ -3,6 +3,7 @@ AES Encryption with pycrypto library
 
 Bài Tập 1
 Sử dụng python và thư viện pycrypto để viết những command sau:
+
 1. Mã hóa dữ liệu với thuật toán AES
 Cú pháp: encrypt.py –m <mode> –i <IV> <tên file input> <tên file output>
 
