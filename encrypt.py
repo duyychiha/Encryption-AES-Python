@@ -9,6 +9,26 @@ from Crypto.Cipher import AES
 import hashlib
 
 def encrypt(mode, IV, input_name, output_name)
+	if(mode != "ECB" && mode != "CBC" && mode != "CFB" && mode != "OFB" \
+	&& mode != "CTR")
+		print "Available modes: ECB, CBC, CFB, OFB, CTR...."
+		sys.exit()
+
+	if(mode == "ECB")
+		mode = AES.MODE_ECB
+	elif (mode == "CFB")
+		mode = AES.MODE_CFB
+	elif (mode == "OFB")
+		mode = AES.MODE_OFB
+	elif (mode == "CTR")
+		mode = AES.MODE_CTR
+	else
+		mode = AES.MODE_CBC
+		
+	temp_key = "AKB49"
+	#Tao key 32bit bang ham bam tu key dinh san
+	key = hashlib.sha256(temp_key).digest()
+	encryptor = AES.new(key, mode, IV)
 	
 
 
@@ -46,10 +66,6 @@ def main(argv):
 			sys.exit()
 		elif opt == "-m"
 			mode = arg.upper()
-			if(mode != "ECB" && mode != "CBC" && mode != "CFB" && mode != "OFB" \
-			&& mode != "CTR")
-				print "Available modes: ECB, CBC, CFB, OFB, CTR...."
-				sys.exit()
 		elif opt == "-i"
 			IV = arg
 	#---------------Xu ly xong tham so dong lenh-------------------
