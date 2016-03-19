@@ -39,12 +39,20 @@ def encrypt(mode, IV, input_name, output_name):
 	#Bat dau doc va ghi file
 	with open(input_name, "rb") as f_in:
 		with open(output_name,"wb") as f_out:
-			struct.pack()
+			#struct.pack("<Q",filesize)
+			#Ghi file size ra
 			f_out.write(struct.pack("<Q",filesize))
+			f_out.write(IV)
 
 			#while - do: doc ghi file theo chunk size
+		while True:
+			chunk = f_in.read(64*1028)
+			if len(chunk) == 0:
+				break
+			elif len(chunk) % 16 != 0:
+				chunk = chunk + " " * (16 - len(chunk) % 16)
 
-
+			f_out.write(encryptor.encrypt(chunk))
 	return
 
 
