@@ -39,5 +39,7 @@ def main(argv):
 			mode = arg
 		elif opt == "-i"
 			IV = arg
-			
-	
+
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
