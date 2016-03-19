@@ -1,10 +1,19 @@
 #!/usr/bin/python
 #encrypt.py –m <mode> –i <IV> <input_file> <output_file>
 
+#Module co ban
 import sys, getopt
+#Module PyCrypto
+from Crypto.Cipher import AES
+#Module ham bam hash
+import hashlib
+
+def encrypt(mode, IV, input_name, output_name)
+	
+
 
 def main(argv):
-
+	#XU ly tham so dong lenh
 	print "Number of arguments:", len(sys.argv), "argument."
 	print "Argument List:", str(sys.argv)
 
@@ -36,10 +45,14 @@ def main(argv):
 			print "encrypt.py -m <mode> -i <IV> <input_file> <output_file>"
 			sys.exit()
 		elif opt == "-m"
-			mode = arg
+			mode = arg.upper()
+			if(mode != "ECB" && mode != "CBC" && mode != "CFB" && mode != "OFB" \
+			&& mode != "CTR")
+				print "Available modes: ECB, CBC, CFB, OFB, CTR...."
+				sys.exit()
 		elif opt == "-i"
 			IV = arg
-
+	#---------------Xu ly xong tham so dong lenh-------------------
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
