@@ -13,6 +13,7 @@ BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 # Neu checksum != null thi kiem tra, ko thi tao checksum
 def check_sum(hash, checksum, input_name):
 
+    print "Hash mode:", hash
     if hash != "SHA256" and hash != "MD5" and hash != "SHA" and hash != "SHA1" and hash != "SHA-1":
         print "Supported modes: SHA256, MD5, SHA...."
         print "Plz choose again!"
@@ -29,7 +30,7 @@ def check_sum(hash, checksum, input_name):
     # Tao Object MyHash thuoc lop checksum do thong so dua vao
     MyHash = hash.new()
 
-    with open("input_name","rb") as f_in:
+    with open(input_name,"rb") as f_in:
         while True:
             block = f_in.read(BlockSize)
             if len (block) == 0:
@@ -45,19 +46,12 @@ def check_sum(hash, checksum, input_name):
 #=======================Ham Main=================================
 def main(argv):
     #XU ly tham so dong lenh
-    #print "Number of arguments:", len(sys.argv), "argument."
-    #print "Argument List:", str(sys.argv)
-
-    #content = dir(SHA)
-    #print content
-    #content = dir(SHA256)
-    #print content
-    #content = dir(MD5)
-    #print content
+    print "Number of arguments:", len(sys.argv), "argument."
+    print "Argument List:", str(sys.argv)
 
     try:
         #getopt.getopt(args, options, [long_options])
-		opts, args = getopt.getopt(argv,"hm:")
+		opts, args = getopt.getopt(argv,"h:c:")
     except getopt.GetoptError:
         print "checksum.py -h <hash> -c <checksum> <inputfile>"
         sys.exit(2)
@@ -67,18 +61,20 @@ def main(argv):
     # check_checksum = False (ko co option -c thi
     # se tao check sum va xuat ra output chuan.
     # Neu check_checksum = True thi se kiem tra checksum co khop hay ko?
+    mychecksum = None
     for opt, arg in opts:
         if opt == "-h":
             hash = arg.upper()
-        elif opt not in ("-c"):
-            checksum = None
         elif opt in ("-c"):
-            checksum = arg
+            print "Checksum: ", arg
+            mychecksum = arg
 
     #Neu danh sach tham so sau khi tru di cac option
     #khong phai la dang: "<input_file>
+    #print args
     if(len(args) != 1):
         #print "Invalid Arguments!"
+        print args
         print "Missing inputfile name!!"
         print "checksum.py -h <hash> -c <checksum> <inputfile>"
         sys.exit(2)
@@ -88,7 +84,7 @@ def main(argv):
     #---------------Xu ly xong tham so dong lenh-------------------
 
 	#Goi ham checksum
-    tmp = check_sum(hash,checksum,input_file)
+    tmp = check_sum(hash,mychecksum,input_file)
     if( tmp == True or tmp == False):
         print "Check checksum result:",tmp
     else:
