@@ -5,12 +5,19 @@
 import sys, getopt, os, struct
 #Module PyCrypto
 from Crypto.Cipher import AES
+from Crypto.Hash import MD5, SHA256
 #Module ham bam hash
 import hashlib
 #encrypt.py –m <mode> –i <IV> <input_file> <output_file>
 
+#Key set mac dinh cho chuong trinh
+#Gia du 2 ben deu da biet key nay
+MyKey = "8765432112345678"
+BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 
+#=======================Ham Encrypt=================================
 def encrypt(mode, IV, input_name, output_name):
+
 	if mode != "ECB" and mode != "CBC" and mode != "CFB" and mode != "OFB" and mode != "CTR":
 		print "Available modes: ECB, CBC, CFB, OFB, CTR...."
 		sys.exit()
@@ -27,35 +34,40 @@ def encrypt(mode, IV, input_name, output_name):
 		#Mac dinh la mode CBC
 		mode = AES.MODE_CBC
 
-	temp_key = "AKB49"
 	#Tao key 32bit bang ham bam tu key dinh san
-	key = hashlib.sha256(temp_key).digest()
+	#key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
+	key = SHA256.SHA256Hash.digest(MyKey)
+	print "Standard key:", key
 	#Bam lai IV cho chuan
-	IV = hashlib.sha256(IV).digest()
-	encryptor = AES.new(key, mode, IV)
+	#IV = hashlib.md5(IV).digest()			#MD5 hash cho ra 16bytes
+	IV = MD5.MD5Hash.digest(IV)
+	print "Standard IV:", IV
 
+	encryptor = AES.new(key, mode, IV)
 	filesize = os.path.getsize(input_name)
 
 	#Bat dau doc va ghi file
 	with open(input_name, "rb") as f_in:
 		with open(output_name,"wb") as f_out:
-			#struct.pack("<Q",filesize)
 			#Ghi file size ra
+			# "<": Little Edian, "Q": unsigned long long
 			f_out.write(struct.pack("<Q",filesize))
-			f_out.write(IV)
+			f_out.write(IV)		#IV dai 16 byte do hash MD5
 
 			#while - do: doc ghi file theo chunk size
 		while True:
-			chunk = f_in.read(64*1028)
+			chunk = f_in.read(BlockSize)
 			if len(chunk) == 0:
 				break
 			elif len(chunk) % 16 != 0:
-				chunk = chunk + " " * (16 - len(chunk) % 16)
-
+				#Padding cho du block
+				chunk = chunk + "@" * (16 - len(chunk) % 16)
 			f_out.write(encryptor.encrypt(chunk))
 	return
+#=================================================================
 
 
+#=======================Ham Main=================================
 def main(argv):
 	#XU ly tham so dong lenh
 	print "Number of arguments:", len(sys.argv), "argument."
@@ -64,6 +76,10 @@ def main(argv):
 	#Kiem tra noi dung module AES
 	#content = dir(AES)
 	#print content
+	#content = dir(MD5)
+	#print(content)
+	#content = dir(SHA256)
+	#print(content)
 
 	try:
 		#getopt.getopt(args, options, [long_options])
@@ -97,6 +113,7 @@ def main(argv):
 		elif opt == "-i":
 			IV = arg
 	#---------------Xu ly xong tham so dong lenh-------------------
+#=================================================================
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
