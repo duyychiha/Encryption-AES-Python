@@ -72,8 +72,8 @@ def encrypt(mode, IV, input_name, output_name):
 #=======================Ham Main=================================
 def main(argv):
 	#XU ly tham so dong lenh
-	print "Number of arguments:", len(sys.argv), "argument."
-	print "Argument List:", str(sys.argv)
+	#print "Number of arguments:", len(sys.argv), "argument."
+	#print "Argument List:", str(sys.argv)
 
 	#Kiem tra noi dung module AES
 	#content = dir(AES)
@@ -90,11 +90,11 @@ def main(argv):
 		print "encrypt.py –m <mode> –i <IV> <input_file> <output_file>"
 		sys.exit(2)
 
-	print "ARGS:", args
+	#print "ARGS:", args
 	#Neu danh sach tham so sau khi tru di cac option
 	#khong phai la dang: "encrypt.py <input_file> <output_file>
 	if( len(args) != 3 and len(args) != 2):
-		print "Invalid Arguments!"
+		#print "Invalid Arguments!"
 		print "Type as: encrypt.py –m <mode> –i <IV> <input_file> <output_file>"
 		sys.exit(2)
 
