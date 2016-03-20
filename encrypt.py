@@ -5,14 +5,14 @@
 import sys, getopt, os, struct
 #Module PyCrypto
 from Crypto.Cipher import AES
-from Crypto.Hash import MD5, SHA256
+#from Crypto.Hash import MD5, SHA256
 #Module ham bam hash
 import hashlib
 #encrypt.py –m <mode> –i <IV> <input_file> <output_file>
 
 #Key set mac dinh cho chuong trinh
 #Gia du 2 ben deu da biet key nay
-MyKey = "8765432112345678"
+MyKey = "8765432112345678" * 2
 BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 
 #=======================Ham Encrypt=================================
@@ -20,6 +20,7 @@ def encrypt(mode, IV, input_name, output_name):
 
 	if mode != "ECB" and mode != "CBC" and mode != "CFB" and mode != "OFB" and mode != "CTR":
 		print "Available modes: ECB, CBC, CFB, OFB, CTR...."
+		print "Plz choose again!"
 		sys.exit()
 
 	if(mode == "ECB"):
@@ -30,28 +31,26 @@ def encrypt(mode, IV, input_name, output_name):
 		mode = AES.MODE_OFB
 	elif (mode == "CTR"):
 		mode = AES.MODE_CTR
+	elif (mode == "CBC"):
+		mode =  AES.MODE_CBC
 	else:
 		#Mac dinh la mode CBC
 		mode = AES.MODE_CBC
 
 	#Tao key 32bit bang ham bam tu key dinh san
 	key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
-	#key = SHA256.SHA256Hash.digest(MyKey)
-	print "Standard key:", key
 	#Bam lai IV cho chuan
 	IV = hashlib.md5(IV).digest()			#MD5 hash cho ra 16bytes
-	#IV = MD5.MD5Hash.digest(IV)
-	print "Standard IV:", IV
 
 	encryptor = AES.new(key, mode, IV)
 	filesize = os.path.getsize(input_name)
-
+	print "File size: ", filesize
 	#Bat dau doc va ghi file
 	with open(input_name, "rb") as f_in:
 		with open(output_name,"wb") as f_out:
 			#Ghi file size ra
 			# "<": Little Edian, "Q": unsigned long long
-			f_out.write(struct.pack("<Q",filesize))
+			f_out.write(struct.pack('<Q',filesize))
 			f_out.write(IV)		#IV dai 16 byte do hash MD5
 
 			#while - do: doc ghi file theo block size
@@ -65,8 +64,8 @@ def encrypt(mode, IV, input_name, output_name):
 					block = block + "@" * (16 - len(block) % 16)
 					#print "Block with pads:", block
 				f_out.write(encryptor.encrypt(block))
-	#return
-#=================================================================
+	return
+#================================================================
 
 
 #=======================Ham Main=================================
