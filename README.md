@@ -11,6 +11,7 @@ Cú pháp: encrypt.py –m [mode] –i [IV] [tên file input] [tên file output]
 Cú pháp: decrypt.py –m [mode] [tên file input] [tên file output]
 
 3. Tính checksum của file với các thuật toán hex và kiểm tra có khớp với checksum cho trước không
+
 Cú pháp: checksum.py –h [hash] -c [checksum] [tên file input] 
 Với
 -h [hash] là thuật toán hash để tạo checksum như md5, sha1, sha256
