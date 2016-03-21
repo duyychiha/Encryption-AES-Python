@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # coding=utf-8
-# sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>
+# very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>
 
 #Module co ban
-import sys, getopt
+import sys, getopt, struct
 #Module PyCrypto, Hash
 from Crypto.Hash import SHA256, MD5, SHA
 from Crypto.PublicKey import RSA
@@ -16,7 +16,7 @@ def very_sign(hash,input_name,sign_file):
     #--------------Chon loai Hash-------------------
     print "Hash mode:", hash
     if hash != "SHA256" and hash != "MD5" and hash != "SHA" and hash != "SHA1" and hash != "SHA-1":
-        print "Supported modes: SHA256, MD5, SHA...."
+        print "Supported modes: SHA256, MD5, SHA."
         print "Plz choose again!"
         sys.exit()
 
@@ -36,6 +36,8 @@ def very_sign(hash,input_name,sign_file):
     #-----Bam noi dung file input (lam giong cau 3 checksum)
     # Tao Object MyHash thuoc lop checksum do thong so dua vao
     MyHash = hash.new()
+
+    #Doc noi dung file input
     with open(input_name,"rb") as f_in:
         while True:
             block = f_in.read(BlockSize)
@@ -50,15 +52,16 @@ def very_sign(hash,input_name,sign_file):
 
     with open(sign_file,"rb") as f_in2:
         signature = f_in2.read()
-
+        #signature = struct.unpack('<Q',f_in.read(struct.calcsize('Q')))
+    #key = RSA_Key.importKey(open(sign_file).read())
 
     signature = long(signature)
+    signature = (signature,)
     print "Type:", type(signature)
-    print "Sign:", signature
+    print "Signature get:", signature
 
     result = RSA_Key.verify(hash,signature)
-    result = RSA_Key.verify(hash,signature)
-    print "Verify check:", result
+    #print "Verify check:", result
     return result
 
 #=======================Ham Main=================================
@@ -71,7 +74,7 @@ def main(argv):
         #getopt.getopt(args, options, [long_options])
 		opts, args = getopt.getopt(argv,"h:")
     except getopt.GetoptError:
-        print "sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>"
+        print "very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>"
         sys.exit(2)
 
     # checksum.py -h <hash> -c <checksum> <inputfile>
@@ -89,9 +92,9 @@ def main(argv):
     #print args
     if(len(args) != 2):
         #print "Invalid Arguments!"
-        print args
+        #print args
         print "Missing inputfile name!!"
-        print "sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>>"
+        print "very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>"
         sys.exit(2)
 
     #Lay thong tin input_file va output_file
@@ -101,6 +104,8 @@ def main(argv):
 
 	#Goi ham checksum
     tmp = very_sign(hash,input_file,file_signed)
+    print "Verify result:", tmp
+    return tmp
 
 #=================================================================
 
