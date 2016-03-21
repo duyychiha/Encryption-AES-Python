@@ -5,7 +5,7 @@ Bài Tập 1
 Sử dụng python và thư viện pycrypto để viết những command sau:
 
 1. Mã hóa dữ liệu với thuật toán AES
-Cú pháp: encrypt.py –m <mode> –i <IV> <tên file input> <tên file output>
+Cú pháp: encrypt.py –m [mode] –i <IV> <tên file input> <tên file output>
 
 2. Giải mã dữ liệu với thuật toán AES
 Cú pháp: decrypt.py –m <mode> <tên file input> <tên file output>
