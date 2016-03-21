@@ -3,10 +3,11 @@
 # sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>
 
 #Module co ban
-import sys, getopt, struct
+import sys, getopt, os
 #Module PyCrypto, Hash
 from Crypto.Hash import SHA256, MD5, SHA
 from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
 from Crypto import Random
 
 BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
@@ -29,10 +30,21 @@ def sign(hash,input_name,file_signed):
     #print "Hash mode: ", hash
 
 
-    #----------Tao RSA Key----------------
-    MyRandom = Random.new().read    #Tao doi tuong random
-    #Tao public key 1024 bit RSA
-    RSA_Key = RSA.generate(1024,MyRandom)
+    #Neu trong folder hien tai co private key thi se load len, ko thi
+    # se tu tao private key
+    if os.path.isfile("private.key"):
+        with open("private.key","r") as f_in:
+            key = RSA.importKey(f_in.read())
+    else:
+        #----------Tao RSA Key----------------
+        MyRandom = Random.new().read    #Tao doi tuong random
+        #Tao public key 1024 bit RSA (private key)
+        key = RSA.generate(1024,MyRandom)
+
+        #Luu private key lai
+        with open("private.key","w") as f_out:
+            f_out.write(key.exportKey())
+            #print "Private key:", key.exportKey()
 
     #-----Bam noi dung file input (lam giong cau 3 checksum)
     # Tao Object MyHash thuoc lop checksum do thong so dua vao
@@ -44,18 +56,29 @@ def sign(hash,input_name,file_signed):
                 break
             MyHash.update(block)
 
-    if(hash == SHA or hash == MD5):
-        hash = MyHash.digest()
-    elif (hash == SHA256):
-        hash = MyHash.hexdigest()
+    hash = MyHash
 
-    MySign = RSA_Key.sign(hash,MyRandom)[0]
-    print "Type:", type(MySign)
-    print "Signature:", MySign
+    #if(hash == SHA or hash == MD5):
+        #hash = MyHash.digest()
+    #elif (hash == SHA256):
+        #hash = MyHash.hexdigest()
+
+
+    #Sign bang private key
+    MySign = PKCS1_v1_5.new(key)
+    signature = MySign.sign(hash)
+    #print "Signature:",signature
+
+    #Ghi public key ra
+    with open("public.key","w") as f_out:
+        f_out.write(key.publickey().exportKey())
+        print "Public key:", key.publickey()
+
+    #Ghi signature ra file
     with open(file_signed,"wb") as f_out:
-        f_out.write(str(MySign))
-        #MySign = long(MySign[0])
-        #f_out.write(struct.pack('<L',MySign))
+        f_out.write(signature)
+        print "Signature:", signature
+
 
     #print "Verify result:", RSA_Key.verify(hash,MySign)
     return MySign

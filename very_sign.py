@@ -3,16 +3,19 @@
 # very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>
 
 #Module co ban
-import sys, getopt, struct
+import sys, getopt, os
 #Module PyCrypto, Hash
 from Crypto.Hash import SHA256, MD5, SHA
 from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5
 from Crypto import Random
 
 BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 
 # sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>
+
 def very_sign(hash,input_name,sign_file):
+
     #--------------Chon loai Hash-------------------
     print "Hash mode:", hash
     if hash != "SHA256" and hash != "MD5" and hash != "SHA" and hash != "SHA1" and hash != "SHA-1":
@@ -29,10 +32,6 @@ def very_sign(hash,input_name,sign_file):
     #print "Hash mode: ", hash
 
 
-    #----------Tao RSA Key----------------
-    MyRandom = Random.new().read    #Tao doi tuong random
-    RSA_Key = RSA.generate(1024,MyRandom)
-
     #-----Bam noi dung file input (lam giong cau 3 checksum)
     # Tao Object MyHash thuoc lop checksum do thong so dua vao
     MyHash = hash.new()
@@ -45,23 +44,28 @@ def very_sign(hash,input_name,sign_file):
                 break
             MyHash.update(block)
 
-    if(hash == SHA or hash == MD5):
-        hash = MyHash.digest()
-    elif (hash == SHA256):
-        hash = MyHash.hexdigest()
+    hash = MyHash
+    #if(hash == SHA or hash == MD5):
+        #hash = MyHash.digest()
+    #elif (hash == SHA256):
+        #hash = MyHash.hexdigest()
 
+    #Doc signature
     with open(sign_file,"rb") as f_in2:
         signature = f_in2.read()
-        #signature = struct.unpack('<Q',f_in.read(struct.calcsize('Q')))
-    #key = RSA_Key.importKey(open(sign_file).read())
-
-    signature = long(signature)
-    signature = (signature,)
-    print "Type:", type(signature)
     print "Signature get:", signature
 
-    result = RSA_Key.verify(hash,signature)
-    #print "Verify check:", result
+    #Doc public key
+    if os.path.isfile("public.key"):
+        with open("public.key","r") as f_in:
+            public_key = RSA.importKey(f_in.read())
+    else:
+        print "Pubkey doesn't exist... Task failed.....!!"
+        return False
+
+    check = PKCS1_v1_5.new(public_key)
+    result = check.verify(hash,signature)
+    print "Verify check:", result
     return result
 
 #=======================Ham Main=================================
@@ -77,12 +81,7 @@ def main(argv):
         print "very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>"
         sys.exit(2)
 
-    # checksum.py -h <hash> -c <checksum> <inputfile>
     #Chay vong for de lay option
-    # check_checksum = False (ko co option -c thi
-    # se tao check sum va xuat ra output chuan.
-    # Neu check_checksum = True thi se kiem tra checksum co khop hay ko?
-    mychecksum = None
     for opt, arg in opts:
         if opt == "-h":
             hash = arg.upper()
