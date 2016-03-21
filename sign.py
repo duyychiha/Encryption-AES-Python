@@ -13,10 +13,48 @@ BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 
 # sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>
 def sign(hash,input_name,file_signed):
-    key = RSA.generate(1024)
-    hash = SHA256.new("123456").digest()
-    signature = key.sign(hash,"")
-    return
+    #--------------Chon loai Hash-------------------
+    print "Hash mode:", hash
+    if hash != "SHA256" and hash != "MD5" and hash != "SHA" and hash != "SHA1" and hash != "SHA-1":
+        print "Supported modes: SHA256, MD5, SHA...."
+        print "Plz choose again!"
+        sys.exit()
+
+    if(hash == "SHA256"):
+        hash = SHA256
+    elif (hash == "MD5"):
+        hash = MD5
+    elif (hash == "SHA" or hash == "SHA1" or hash == "SHA-1"):
+        hash = SHA
+    print "Hash mode: ", hash
+
+
+    #----------Tao RSA Key----------------
+    MyRandom = Random.new().read    #Tao doi tuong random
+    RSA_Key = RSA.generate(1024,MyRandom)
+
+    #-----Bam noi dung file input (lam giong cau 3 checksum)
+    # Tao Object MyHash thuoc lop checksum do thong so dua vao
+    MyHash = hash.new()
+    with open(input_name,"rb") as f_in:
+        while True:
+            block = f_in.read(BlockSize)
+            if len (block) == 0:
+                break
+            MyHash.update(block)
+
+    #MyHash.hexdigest()
+    #MyHash.digest()
+    if(hash == SHA or hash == MD5):
+        hash = MyHash.digest()
+    elif (hash == SHA256):
+        hash = MyHash.hexdigest()
+
+    MySign = RSA_Key.sign(hash,MyRandom)[0]
+    print "Signature:", MySign
+    with open(input_name,"wb") as f_out:
+        f_out.write(str(MySign))
+    return MySign
 
 #=======================Ham Main=================================
 def main(argv):
@@ -39,7 +77,7 @@ def main(argv):
     mychecksum = None
     for opt, arg in opts:
         if opt == "-h":
-            hash = arg
+            hash = arg.upper()
 
     #Neu danh sach tham so sau khi tru di cac option
     #khong phai la dang: "<input_file>
