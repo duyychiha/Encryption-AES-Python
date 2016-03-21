@@ -21,7 +21,7 @@ Padding = "@"
 def encrypt(mode, IV, input_name, output_name):
 
 	if mode != "ECB" and mode != "CBC" and mode != "CFB" and mode != "OFB" and mode != "CTR":
-		print "Available modes: ECB, CBC, CFB, OFB, CTR...."
+		print "Available modes: ECB, CBC, CFB, OFB."
 		print "Plz choose again!"
 		sys.exit()
 
@@ -31,12 +31,12 @@ def encrypt(mode, IV, input_name, output_name):
 		mode = AES.MODE_CFB
 	elif (mode == "OFB"):
 		mode = AES.MODE_OFB
-	elif (mode == "CTR"):
-		mode = AES.MODE_CTR
 	elif (mode == "CBC"):
 		mode =  AES.MODE_CBC
 	else:
 		#Mac dinh la mode CBC
+		print "Available modes: ECB, CBC, CFB, OFB...."
+		print "Set default mode: CBC"
 		mode = AES.MODE_CBC
 
 	#Tao key 32bit bang ham bam tu key dinh san
