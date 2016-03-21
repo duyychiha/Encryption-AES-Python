@@ -1,19 +1,21 @@
 #!/usr/bin/python
 # coding=utf-8
+#encrypt.py –m <mode> –i <IV> <input_file> <output_file>
 
 #Module co ban
 import sys, getopt, os, struct
 #Module PyCrypto
 from Crypto.Cipher import AES
-#from Crypto.Hash import MD5, SHA256
 #Module ham bam hash
-import hashlib
+from Crypto.Hash import MD5, SHA256
+#import hashlib
 #encrypt.py –m <mode> –i <IV> <input_file> <output_file>
 
 #Key set mac dinh cho chuong trinh
 #Gia du 2 ben deu da biet key nay
 MyKey = "8765432112345678" * 2
 BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
+Padding = "@"
 
 #=======================Ham Encrypt=================================
 def encrypt(mode, IV, input_name, output_name):
@@ -38,9 +40,14 @@ def encrypt(mode, IV, input_name, output_name):
 		mode = AES.MODE_CBC
 
 	#Tao key 32bit bang ham bam tu key dinh san
-	key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
+	MyHash = SHA256.new(MyKey)
+	key = MyHash.digest()
+	#print "Size: ", key
+	#key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
 	#Bam lai IV cho chuan
-	IV = hashlib.md5(IV).digest()			#MD5 hash cho ra 16bytes
+	MyHash = MD5.new(IV)
+	IV = MyHash.digest()
+	#IV = hashlib.md5(IV).digest()			#MD5 hash cho ra 16bytes
 
 	encryptor = AES.new(key, mode, IV)
 	filesize = os.path.getsize(input_name)
@@ -61,7 +68,7 @@ def encrypt(mode, IV, input_name, output_name):
 					break
 				elif len(block) % 16 != 0:
 					#Padding cho du block
-					block = block + "@" * (16 - len(block) % 16)
+					block = block + Padding * (16 - len(block) % 16)
 					#print "Block with pads:", block
 				f_out.write(encryptor.encrypt(block))
 	return
@@ -73,14 +80,6 @@ def main(argv):
 	#XU ly tham so dong lenh
 	#print "Number of arguments:", len(sys.argv), "argument."
 	#print "Argument List:", str(sys.argv)
-
-	#Kiem tra noi dung module AES
-	#content = dir(AES)
-	#print content
-	#content = dir(MD5)
-	#print(content)
-	#content = dir(SHA256)
-	#print(content)
 
 	try:
 		#getopt.getopt(args, options, [long_options])

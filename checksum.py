@@ -25,7 +25,7 @@ def check_sum(hash, checksum, input_name):
         hash = MD5
     elif (hash == "SHA" or hash == "SHA1" or hash == "SHA-1"):
         hash = SHA
-    print "Hash mode: ", hash
+    #print "Hash mode: ", hash
 
     # Tao Object MyHash thuoc lop checksum do thong so dua vao
     MyHash = hash.new()
@@ -37,17 +37,18 @@ def check_sum(hash, checksum, input_name):
                 break
             MyHash.update(block)
 
-        if(checksum != None):
-            return checksum == MyHash.hexdigest()
-        else:
-            return MyHash.hexdigest()
+    hash = MyHash.hexdigest()
+    if(checksum != None):
+        return checksum == hash
+    else:
+        return hash
 
 
 #=======================Ham Main=================================
 def main(argv):
     #XU ly tham so dong lenh
-    print "Number of arguments:", len(sys.argv), "argument."
-    print "Argument List:", str(sys.argv)
+    #print "Number of arguments:", len(sys.argv), "argument."
+    #print "Argument List:", str(sys.argv)
 
     try:
         #getopt.getopt(args, options, [long_options])
@@ -66,16 +67,15 @@ def main(argv):
         if opt == "-h":
             hash = arg.upper()
         elif opt in ("-c"):
-            print "Checksum: ", arg
+            #print "Checksum: ", arg
             mychecksum = arg
 
     #Neu danh sach tham so sau khi tru di cac option
     #khong phai la dang: "<input_file>
-    #print args
     if(len(args) != 1):
         #print "Invalid Arguments!"
         print args
-        print "Missing inputfile name!!"
+        #print "Missing inputfile name!!"
         print "checksum.py -h <hash> -c <checksum> <inputfile>"
         sys.exit(2)
 
@@ -89,7 +89,7 @@ def main(argv):
         print "Check checksum result:",tmp
     else:
         print "Checksum created:", tmp
-    return
+    return tmp
 #=================================================================
 
 if __name__ == "__main__":

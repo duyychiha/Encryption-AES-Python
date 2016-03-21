@@ -6,8 +6,9 @@
 import sys, getopt, struct
 #Module PyCrypto
 from Crypto.Cipher import AES
+from Crypto.Hash import SHA256
 #Module ham bam hash
-import hashlib
+#import hashlib
 
 #Key set mac dinh cho chuong trinh
 #Gia du 2 ben deu da biet key nay
@@ -37,7 +38,9 @@ def decrypt(mode, input_name, output_name):
 		mode = AES.MODE_CBC
 
 	#Tao key 32bit bang ham bam tu key dinh san
-	key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
+	#key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
+	MyHash = SHA256.new(MyKey)
+	key = MyHash.digest()
 
 	with open(input_name, "rb") as f_in:
 		size = struct.unpack('<Q',f_in.read(struct.calcsize('Q')))[0]
