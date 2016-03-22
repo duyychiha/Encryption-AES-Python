@@ -74,7 +74,7 @@ def main(argv):
     #khong phai la dang: "<input_file>
     if(len(args) != 1):
         #print "Invalid Arguments!"
-        print args
+        #print args
         #print "Missing inputfile name!!"
         print "checksum.py -h <hash> -c <checksum> <inputfile>"
         sys.exit(2)

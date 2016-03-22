@@ -7,6 +7,7 @@ import sys, getopt, struct
 #Module PyCrypto
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256
+import Crypto.Util.Counter
 #Module ham bam hash
 #import hashlib
 
@@ -44,8 +45,15 @@ def decrypt(mode, input_name, output_name):
 
 	with open(input_name, "rb") as f_in:
 		size = struct.unpack('<Q',f_in.read(struct.calcsize('Q')))[0]
+		size = long(size)
 		IV = f_in.read(16)		#read 16 thoi vi IV xai hash MD5
-		decryptor = AES.new(key, mode, IV)
+
+		if (mode != AES.MODE_CTR):
+			decryptor = AES.new(key, mode, IV)
+		else:
+			ctr = Crypto.Util.Counter.new(128, initial_value=long(IV.encode("hex"), 16))
+			decryptor = Crypto.Cipher.AES.new(key, AES.MODE_CTR, counter=ctr)
+
 
 		with open(output_name, "wb") as f_out:
 			while True:

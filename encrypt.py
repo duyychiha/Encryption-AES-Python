@@ -8,13 +8,9 @@ import sys, getopt, os, struct
 from Crypto.Cipher import AES
 #Module ham bam hash
 from Crypto.Hash import MD5, SHA256
-#import hashlib
+import  Crypto.Util.Counter
+
 #encrypt.py –m <mode> –i <IV> <input_file> <output_file>
-
-#ctr = Crypto.Util.Counter.new(128, initial_value=long(iv.encode("hex"), 16))
-
-#cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_CTR, counter=ctr)
-#print cipher.encrypt(plaintext)
 
 #Key set mac dinh cho chuong trinh
 #Gia du 2 ben deu da biet key nay
@@ -22,11 +18,16 @@ MyKey = "8765432112345678" * 2
 BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 Padding = "@"
 
+#ctr = Crypto.Util.Counter.new(128, initial_value=long(iv.encode("hex"), 16))
+
+#cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_CTR, counter=ctr)
+#print cipher.encrypt(plaintext)
+
 #=======================Ham Encrypt=================================
 def encrypt(mode, IV, input_name, output_name):
 
 	if mode != "ECB" and mode != "CBC" and mode != "CFB" and mode != "OFB" and mode != "CTR":
-		print "Available modes: ECB, CBC, CFB, OFB."
+		print "Available modes: ECB, CBC, CFB, OFB, CTR."
 		print "Plz choose again!"
 		sys.exit()
 
@@ -38,6 +39,8 @@ def encrypt(mode, IV, input_name, output_name):
 		mode = AES.MODE_OFB
 	elif (mode == "CBC"):
 		mode =  AES.MODE_CBC
+	elif (mode == "CTR"):
+		mode = AES.MODE_CTR
 	else:
 		#Mac dinh la mode CBC
 		print "Available modes: ECB, CBC, CFB, OFB...."
@@ -54,7 +57,13 @@ def encrypt(mode, IV, input_name, output_name):
 	IV = MyHash.digest()
 	#IV = hashlib.md5(IV).digest()			#MD5 hash cho ra 16bytes
 
-	encryptor = AES.new(key, mode, IV)
+
+	if (mode != AES.MODE_CTR):
+		encryptor = AES.new(key, mode, IV)
+	else:
+		ctr = Crypto.Util.Counter.new(128, initial_value=long(IV.encode("hex"), 16))
+		encryptor = AES.new(key, AES.MODE_CTR, counter=ctr)
+
 	filesize = os.path.getsize(input_name)
 	print "File size: ", filesize
 	#Bat dau doc va ghi file
