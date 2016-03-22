@@ -11,6 +11,11 @@ from Crypto.Hash import MD5, SHA256
 #import hashlib
 #encrypt.py –m <mode> –i <IV> <input_file> <output_file>
 
+#ctr = Crypto.Util.Counter.new(128, initial_value=long(iv.encode("hex"), 16))
+
+#cipher = Crypto.Cipher.AES.new(key, Crypto.Cipher.AES.MODE_CTR, counter=ctr)
+#print cipher.encrypt(plaintext)
+
 #Key set mac dinh cho chuong trinh
 #Gia du 2 ben deu da biet key nay
 MyKey = "8765432112345678" * 2
