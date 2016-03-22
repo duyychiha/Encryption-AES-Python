@@ -29,7 +29,6 @@ def very_sign(hash,input_name,sign_file):
         hash = MD5
     elif (hash == "SHA" or hash == "SHA1" or hash == "SHA-1"):
         hash = SHA
-    #print "Hash mode: ", hash
 
 
     #-----Bam noi dung file input (lam giong cau 3 checksum)
@@ -43,12 +42,7 @@ def very_sign(hash,input_name,sign_file):
             if len (block) == 0:
                 break
             MyHash.update(block)
-
     hash = MyHash
-    #if(hash == SHA or hash == MD5):
-        #hash = MyHash.digest()
-    #elif (hash == SHA256):
-        #hash = MyHash.hexdigest()
 
     #Doc signature
     with open(sign_file,"rb") as f_in2:
@@ -56,8 +50,8 @@ def very_sign(hash,input_name,sign_file):
     print "Signature get:", signature
 
     #Doc public key
-    if os.path.isfile("public.key"):
-        with open("public.key","r") as f_in:
+    if os.path.isfile("public_key.pub"):
+        with open("public_key.pub","r") as f_in:
             public_key = RSA.importKey(f_in.read())
     else:
         print "Pubkey doesn't exist... Task failed.....!!"
@@ -71,12 +65,9 @@ def very_sign(hash,input_name,sign_file):
 #=======================Ham Main=================================
 def main(argv):
     #XU ly tham so dong lenh
-    #print "Number of arguments:", len(sys.argv), "argument."
-    #print "Argument List:", str(sys.argv)
 
     try:
-        #getopt.getopt(args, options, [long_options])
-		opts, args = getopt.getopt(argv,"h:")
+        opts, args = getopt.getopt(argv,"h:")
     except getopt.GetoptError:
         print "very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>"
         sys.exit(2)
@@ -87,12 +78,8 @@ def main(argv):
             hash = arg.upper()
 
     #Neu danh sach tham so sau khi tru di cac option
-    #khong phai la dang: "<input_file>
-    #print args
     if(len(args) != 2):
-        #print "Invalid Arguments!"
-        #print args
-        print "Missing inputfile name!!"
+        #print "Missing inputfile name!!"
         print "very_sign.py -h <hash> <fileinput> <ten_file_chua_chu_ky>"
         sys.exit(2)
 

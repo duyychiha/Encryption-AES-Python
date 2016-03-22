@@ -13,7 +13,9 @@ from Crypto import Random
 BlockSize = 16 * 64 * 1024 # = 1024*1024, block size phai chia het cho 16!!
 
 # sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>
+
 def sign(hash,input_name,file_signed):
+
     #--------------Chon loai Hash-------------------
     print "Hash mode:", hash
     if hash != "SHA256" and hash != "MD5" and hash != "SHA" and hash != "SHA1" and hash != "SHA-1":
@@ -27,24 +29,21 @@ def sign(hash,input_name,file_signed):
         hash = MD5
     elif (hash == "SHA" or hash == "SHA1" or hash == "SHA-1"):
         hash = SHA
-    #print "Hash mode: ", hash
-
 
     #Neu trong folder hien tai co private key thi se load len, ko thi
     # se tu tao private key
-    if os.path.isfile("private.key"):
-        with open("private.key","r") as f_in:
+    if os.path.isfile("private_key.prv"):
+        with open("private_key.prv","r") as f_in:
             key = RSA.importKey(f_in.read())
     else:
         #----------Tao RSA Key----------------
-        MyRandom = Random.new().read    #Tao doi tuong random
-        #Tao public key 1024 bit RSA (private key)
+        MyRandom = Random.new().read
         key = RSA.generate(1024,MyRandom)
 
         #Luu private key lai
-        with open("private.key","w") as f_out:
+        with open("private_key.prv","w") as f_out:
             f_out.write(key.exportKey())
-            #print "Private key:", key.exportKey()
+
 
     #-----Bam noi dung file input (lam giong cau 3 checksum)
     # Tao Object MyHash thuoc lop checksum do thong so dua vao
@@ -58,19 +57,12 @@ def sign(hash,input_name,file_signed):
 
     hash = MyHash
 
-    #if(hash == SHA or hash == MD5):
-        #hash = MyHash.digest()
-    #elif (hash == SHA256):
-        #hash = MyHash.hexdigest()
-
-
     #Sign bang private key
     MySign = PKCS1_v1_5.new(key)
     signature = MySign.sign(hash)
-    #print "Signature:",signature
 
     #Ghi public key ra
-    with open("public.key","w") as f_out:
+    with open("public_key.pub","w") as f_out:
         f_out.write(key.publickey().exportKey())
         print "Public key:", key.publickey()
 
@@ -79,19 +71,15 @@ def sign(hash,input_name,file_signed):
         f_out.write(signature)
         print "Signature:", signature
 
-
     #print "Verify result:", RSA_Key.verify(hash,MySign)
     return MySign
 
 #=======================Ham Main=================================
 def main(argv):
     #XU ly tham so dong lenh
-    #print "Number of arguments:", len(sys.argv), "argument."
-    #print "Argument List:", str(sys.argv)
 
     try:
-        #getopt.getopt(args, options, [long_options])
-		opts, args = getopt.getopt(argv,"h:")
+        opts, args = getopt.getopt(argv,"h:")
     except getopt.GetoptError:
         print "sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>"
         sys.exit(2)
@@ -102,12 +90,8 @@ def main(argv):
             hash = arg.upper()
 
     #Neu danh sach tham so sau khi tru di cac option
-    #khong phai la dang: "<input_file>
-    #print args
     if(len(args) != 2):
-        #print "Invalid Arguments!"
-        #print args
-        print "Missing inputfile name!!"
+        #print "Missing inputfile name!!"
         print "sign.py -h <hash> <fileinput> <ten_file_se_ghi_chu_ky>"
         sys.exit(2)
 
