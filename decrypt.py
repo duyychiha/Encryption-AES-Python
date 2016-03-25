@@ -33,10 +33,6 @@ def decrypt(mode, input_name, output_name):
 		mode = AES.MODE_CTR
 	elif (mode == "CBC"):
 		mode =  AES.MODE_CBC
-	else:
-		#Mac dinh la mode CBC
-		print "Wrong mode! Set CBC as default mode!!"
-		mode = AES.MODE_CBC
 
 	#Tao key 32bit bang ham bam tu key dinh san
 	#key = hashlib.sha256(MyKey).digest()	#sha256 cho ra 32bytes key
