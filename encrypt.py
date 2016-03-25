@@ -41,11 +41,6 @@ def encrypt(mode, IV, input_name, output_name):
 		mode =  AES.MODE_CBC
 	elif (mode == "CTR"):
 		mode = AES.MODE_CTR
-	else:
-		#Mac dinh la mode CBC
-		print "Available modes: ECB, CBC, CFB, OFB...."
-		print "Set default mode: CBC"
-		mode = AES.MODE_CBC
 
 	#Tao key 32bit bang ham bam tu key dinh san
 	MyHash = SHA256.new(MyKey)
